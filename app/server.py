@@ -528,6 +528,47 @@ class SecureChatServer:
         except Exception as e:
             print(f"[!] Receive error: {e}")
             return None
+            
+    
+    # ==================== PHASE 6: NON-REPUDIATION ====================
+    
+    def generate_and_save_receipt(self, client_data):
+        """
+        Generate SessionReceipt at end of chat session.
+        Signs the transcript hash and saves receipt.
+        """
+        print(f"\n[*] Generating SessionReceipt for {client_data['username']}...")
+        
+        try:
+            from app.storage.transcript import generate_session_receipt, save_receipt
+            
+            transcript_path = f"transcripts/server_{client_data['username']}.txt"
+            
+            if not os.path.exists(transcript_path):
+                print("[!] No transcript found - no messages were exchanged")
+                return
+            
+            # Generate receipt
+            receipt = generate_session_receipt(
+                transcript_path=transcript_path,
+                private_key=self.server_private_key,
+                peer_name="server",
+                username=client_data['username']
+            )
+            
+            # Save receipt
+            receipt_path = f"receipts/server_{client_data['username']}_receipt.json"
+            save_receipt(receipt, receipt_path)
+            
+            print(f"[✓] Server receipt generated")
+            print(f"    Transcript hash: {receipt['transcript_sha256'][:32]}...")
+            print(f"    Messages: {receipt['first_seq']} to {receipt['last_seq']}")
+            
+        except Exception as e:
+            print(f"[✗] Receipt generation failed: {e}")
+            import traceback
+            traceback.print_exc()
+            
     
     def chat_session(self, client_data):
         """
@@ -555,6 +596,9 @@ class SecureChatServer:
                 break
         
         print(f"[✓] Chat session ended with {client_data['username']}\n")
+        
+        # *** PHASE 6: Generate SessionReceipt ***
+        self.generate_and_save_receipt(client_data)
 
 
 if __name__ == "__main__":

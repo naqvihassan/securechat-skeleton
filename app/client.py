@@ -482,7 +482,45 @@ class SecureChatClient:
             import traceback
             traceback.print_exc()
             return None
+    # ==================== PHASE 6: NON-REPUDIATION ====================
     
+    def generate_and_save_receipt(self):
+        """
+        Generate SessionReceipt at end of chat.
+        Signs the transcript hash and saves receipt.
+        """
+        print("\n[*] Generating SessionReceipt...")
+        
+        try:
+            from app.storage.transcript import generate_session_receipt, save_receipt
+            
+            transcript_path = f"transcripts/client_{self.username}.txt"
+            
+            if not os.path.exists(transcript_path):
+                print("[!] No transcript found - no messages were sent")
+                return
+            
+            # Generate receipt
+            receipt = generate_session_receipt(
+                transcript_path=transcript_path,
+                private_key=self.client_private_key,
+                peer_name="client",
+                username=self.username
+            )
+            
+            # Save receipt
+            receipt_path = f"receipts/client_{self.username}_receipt.json"
+            save_receipt(receipt, receipt_path)
+            
+            print(f"[✓] Receipt generated and saved")
+            print(f"    Transcript hash: {receipt['transcript_sha256'][:32]}...")
+            print(f"    Messages: {receipt['first_seq']} to {receipt['last_seq']}")
+            
+        except Exception as e:
+            print(f"[✗] Receipt generation failed: {e}")
+            import traceback
+            traceback.print_exc()
+            
     # ==================== CHAT LOOP ====================
     
     def chat_loop(self):
@@ -531,6 +569,10 @@ class SecureChatClient:
         
         self.is_connected = False
         print("[✓] Chat session ended\n")
+        
+        # *** PHASE 6: Generate SessionReceipt ***
+        self.generate_and_save_receipt()
+        
     
     # ==================== MAIN FLOW ====================
     

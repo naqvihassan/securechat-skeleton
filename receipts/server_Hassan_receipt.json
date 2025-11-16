@@ -1,0 +1,9 @@
+{
+  "type": "receipt",
+  "peer": "server",
+  "username": "Hassan",
+  "first_seq": 1,
+  "last_seq": 4,
+  "transcript_sha256": "bbf91a4483cd4ec99070ee7bfa9fe2cdf52e82601bfc639dc16c0ec7a28a215e",
+  "sig": "W6UwAmbr737ki2gcLQAGYLgW9QKceMbJ+O4t6RPJhsrVoVLh0Z5466VoKUH5ow+BJ3furh9w+FzWAWuBYBOzVfVANO+TRsLyWymQpuL8M66keuNca+WBiXTm0f3SAmQYY9txo5780/E+4WfTnTNJEbWK5APYCkitvmjlwqCCSUxNuMxH1e/IjApYBGkkNx9gMs/QNTxDp/sP3y+KVuK5q7U1ms8TmJXXbMaf9bNkAgWBgcI8ObFchmi5TqFHMAfhuIQFAtQJJQ24nKyAISgNpWrPEw/Kly3GJy0JJl6FkMiTobP6qA6NNMOYucdLxqKoqp1aSyv3PRF7Penh7c3rww=="
+}
